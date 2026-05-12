@@ -1,0 +1,42 @@
+---
+- name: Deploy NodeJS Application using Pull Model
+  hosts: local
+  become: yes
+  gather_facts: no
+
+  tasks:
+
+    - name: Install NodeJS
+      apt:
+        name: nodejs
+        state: present
+        update_cache: yes
+
+    - name: Install npm
+      apt:
+        name: npm
+        state: present
+
+    - name: Create application directory
+      file:
+        path: /home/jagruti_keluskar/nodeapp
+        state: directory
+        mode: '0755'
+
+    - name: Create app.js file
+      copy:
+        dest: /home/jagruti_keluskar/nodeapp/app.js
+        content: |
+          const http = require('http');
+
+          const server = http.createServer((req, res) => {
+              res.writeHead(200, {'Content-Type': 'text/plain'});
+              res.end('Welcome to NodeJS Web Application');
+          });
+
+          server.listen(3000);
+
+          console.log('Server running on port 3000');
+
+    - name: Run NodeJS Application
+      shell: nohup node /home/jagruti_keluskar/nodeapp/app.js &
